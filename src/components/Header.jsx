@@ -1,16 +1,29 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useRef, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import './Header.css'
 
-export default function Header({ currentPage, setCurrentPage }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+export default function Header() {
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
 
-  const navItems = [
-    { label: 'Home', id: 'home' },
-    { label: 'Chat', id: 'chat' },
-    { label: 'Features', id: 'features' },
-    { label: 'Pricing', id: 'pricing' },
+  const menuItems = [
+    { label: 'Features', icon: '✨' },
+    { label: 'Pricing', icon: '💎' },
+    { label: 'About', icon: 'ℹ️' },
+    { label: 'Help', icon: '❓' },
+    { label: 'Settings', icon: '⚙️' },
   ]
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const headerVariants = {
     hidden: { y: -100, opacity: 0 },
@@ -21,13 +34,20 @@ export default function Header({ currentPage, setCurrentPage }) {
     }
   }
 
-  const navItemVariants = {
-    hidden: { y: -20, opacity: 0 },
-    visible: (i) => ({
-      y: 0,
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: -10, scale: 0.95 },
+    visible: {
       opacity: 1,
-      transition: { delay: i * 0.1, duration: 0.4 }
-    })
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.2, ease: 'easeOut' }
+    },
+    exit: {
+      opacity: 0,
+      y: -10,
+      scale: 0.95,
+      transition: { duration: 0.15 }
+    }
   }
 
   return (
@@ -42,54 +62,51 @@ export default function Header({ currentPage, setCurrentPage }) {
           className="logo"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setCurrentPage('home')}
         >
           <div className="logo-icon">G</div>
           <span className="logo-text">Genesis</span>
         </motion.div>
 
-        <nav className={`nav ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-          {navItems.map((item, i) => (
-            <motion.a
-              key={item.id}
-              className={`nav-item ${currentPage === item.id ? 'active' : ''}`}
-              onClick={() => {
-                setCurrentPage(item.id)
-                setMobileMenuOpen(false)
-              }}
-              custom={i}
-              variants={navItemVariants}
-              initial="hidden"
-              animate="visible"
+        <div className="header-actions">
+          <div className="dropdown-container" ref={dropdownRef}>
+            <motion.button
+              className="menu-btn"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              {item.label}
-            </motion.a>
-          ))}
-        </nav>
+              <span>Menu</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </motion.button>
 
-        <motion.button
-          className="btn-primary header-btn"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setCurrentPage('chat')}
-        >
-          Get Started
-        </motion.button>
-
-        <motion.button
-          className="mobile-menu-btn"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          whileTap={{ scale: 0.9 }}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </motion.button>
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  className="dropdown-menu"
+                  variants={dropdownVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  {menuItems.map((item) => (
+                    <motion.button
+                      key={item.label}
+                      className="dropdown-item"
+                      whileHover={{ backgroundColor: 'rgba(99, 102, 241, 0.1)' }}
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <span className="item-icon">{item.icon}</span>
+                      <span className="item-label">{item.label}</span>
+                    </motion.button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
-
-      <div className="header-glow"></div>
     </motion.header>
   )
 }

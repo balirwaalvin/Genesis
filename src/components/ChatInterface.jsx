@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import axios from 'axios'
+import { motion } from 'framer-motion'
 import './ChatInterface.css'
 
 export default function ChatInterface() {
@@ -8,7 +7,6 @@ export default function ChatInterface() {
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedModel, setSelectedModel] = useState('advanced')
-  const [showChat, setShowChat] = useState(false)
   const messagesEndRef = useRef(null)
 
   const scrollToBottom = () => {
@@ -23,14 +21,9 @@ export default function ChatInterface() {
     e.preventDefault()
     if (!inputValue.trim()) return
 
-    // First message initializes chat
-    if (messages.length === 0) {
-      setShowChat(true)
-    }
-
     // Add user message
     const userMessage = {
-      id: messages.length + 1,
+      id: Date.now(),
       text: inputValue,
       sender: 'user',
       timestamp: new Date()
@@ -51,7 +44,7 @@ export default function ChatInterface() {
       ]
 
       const aiMessage = {
-        id: messages.length + 2,
+        id: Date.now() + 1,
         text: responses[Math.floor(Math.random() * responses.length)],
         sender: 'ai',
         timestamp: new Date()
@@ -68,144 +61,191 @@ export default function ChatInterface() {
     exit: { opacity: 0, y: -20, transition: { duration: 0.2 } }
   }
 
-  const genesisVariants = {
-    initial: { opacity: 0, scale: 0.8, y: 30 },
+  const emptyStateVariants = {
+    initial: { opacity: 0, y: 20 },
     animate: {
       opacity: 1,
-      scale: 1,
       y: 0,
-      transition: { duration: 0.8, ease: 'easeOut' }
+      transition: { duration: 0.6, ease: 'easeOut' }
     }
   }
 
   return (
     <div className="chat-container">
-      {/* Genesis Title Section */}
-      {!showChat && (
-        <motion.div
-          className="genesis-section"
-          variants={genesisVariants}
-          initial="initial"
-          animate="animate"
-          exit={{ opacity: 0, scale: 0.8 }}
-        >
-          <div className="genesis-title">
-            <h1 className="genesis-text">Genesis</h1>
-            <div className="genesis-glow"></div>
-          </div>
-          <p className="genesis-subtitle">Your Advanced AI Assistant</p>
-        </motion.div>
-      )}
-
-      {/* Chat Section */}
-      <motion.div
-        className={`chat-section ${showChat ? 'active' : ''}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: showChat ? 0 : 0.5 }}
-      >
-        <div className="chat-header">
-          <div className="chat-title">
-            <h2>Chat</h2>
-          </div>
-          <div className="model-selector">
-            <label>Model:</label>
-            <select value={selectedModel} onChange={(e) => setSelectedModel(e.target.value)}>
-              <option value="advanced">Advanced</option>
-              <option value="standard">Standard</option>
-              <option value="creative">Creative</option>
-              <option value="technical">Technical</option>
-            </select>
-          </div>
+      {/* Main Chat Area */}
+      <div className="chat-main">
+        {/* Model Selector Bar */}
+        <div className="model-selector-bar">
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            className="model-select"
+          >
+            <option value="advanced">Genesis Advanced</option>
+            <option value="standard">Genesis Standard</option>
+            <option value="creative">Genesis Creative</option>
+            <option value="technical">Genesis Technical</option>
+          </select>
         </div>
 
+        {/* Messages Area */}
         <div className="chat-messages">
-          <AnimatePresence mode="wait">
-            {messages.map((msg, index) => (
-              <motion.div
-                key={msg.id}
-                className={`message ${msg.sender}`}
-                variants={messageVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                layout
-              >
-                <div className="message-avatar">
-                  {msg.sender === 'ai' ? '🤖' : '👤'}
-                </div>
-                <div className="message-content">
-                  <div className="message-bubble">
-                    <p>{msg.text}</p>
-                    <div className="message-actions">
-                      <button className="action-btn" title="Copy">📋</button>
-                      <button className="action-btn" title="Like">👍</button>
-                      <button className="action-btn" title="Dislike">👎</button>
-                    </div>
+          {messages.length === 0 ? (
+            <motion.div
+              className="empty-state"
+              variants={emptyStateVariants}
+              initial="initial"
+              animate="animate"
+            >
+              <div className="genesis-logo">
+                <div className="logo-circle">G</div>
+              </div>
+              <h2 className="welcome-title">Welcome to Genesis</h2>
+              <p className="welcome-subtitle">How can I help you today?</p>
+
+              <div className="suggestion-cards">
+                <motion.button
+                  className="suggestion-card"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setInputValue("Explain quantum computing in simple terms")}
+                >
+                  <span className="suggestion-icon">🔬</span>
+                  <span className="suggestion-text">Explain quantum computing</span>
+                </motion.button>
+                <motion.button
+                  className="suggestion-card"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setInputValue("Write a creative story")}
+                >
+                  <span className="suggestion-icon">✨</span>
+                  <span className="suggestion-text">Write a creative story</span>
+                </motion.button>
+                <motion.button
+                  className="suggestion-card"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setInputValue("Help me code a website")}
+                >
+                  <span className="suggestion-icon">💻</span>
+                  <span className="suggestion-text">Help me code</span>
+                </motion.button>
+                <motion.button
+                  className="suggestion-card"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setInputValue("Plan my day efficiently")}
+                >
+                  <span className="suggestion-icon">📅</span>
+                  <span className="suggestion-text">Plan my day</span>
+                </motion.button>
+              </div>
+            </motion.div>
+          ) : (
+            <>
+              {messages.map((msg) => (
+                <motion.div
+                  key={msg.id}
+                  className={`message ${msg.sender}`}
+                  variants={messageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  layout
+                >
+                  <div className="message-avatar">
+                    {msg.sender === 'ai' ? (
+                      <div className="ai-avatar">G</div>
+                    ) : (
+                      <div className="user-avatar">👤</div>
+                    )}
                   </div>
-                  <span className="message-time">
-                    {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-            {isLoading && (
-              <motion.div
-                key="loading"
-                className="message ai"
-                variants={messageVariants}
-                initial="initial"
-                animate="animate"
-              >
-                <div className="message-avatar">🤖</div>
-                <div className="message-content">
-                  <div className="message-bubble loading">
+                  <div className="message-content">
+                    <div className="message-text">
+                      <p>{msg.text}</p>
+                    </div>
+                    {msg.sender === 'ai' && (
+                      <div className="message-actions">
+                        <button className="action-btn" title="Copy">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M4 2h8a2 2 0 012 2v8M2 6h8a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                          </svg>
+                        </button>
+                        <button className="action-btn" title="Good response">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 2l2 6h6l-5 4 2 6-5-4-5 4 2-6-5-4h6z"/>
+                          </svg>
+                        </button>
+                        <button className="action-btn" title="Bad response">
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M8 14l-2-6H0l5-4L3 0l5 4 5-4-2 4 5 4h-6z"/>
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+              {isLoading && (
+                <motion.div
+                  className="message ai"
+                  variants={messageVariants}
+                  initial="initial"
+                  animate="animate"
+                >
+                  <div className="message-avatar">
+                    <div className="ai-avatar">G</div>
+                  </div>
+                  <div className="message-content">
                     <div className="typing-indicator">
                       <span></span>
                       <span></span>
                       <span></span>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <div ref={messagesEndRef} />
+                </motion.div>
+              )}
+              <div ref={messagesEndRef} />
+            </>
+          )}
         </div>
 
-        <form className="chat-input-area" onSubmit={handleSendMessage}>
-          <div className="input-wrapper">
-            <input
-              type="text"
-              placeholder="Ask me anything... Type your question here"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              disabled={isLoading}
-            />
-            <div className="input-actions">
-              <button type="button" className="action-icon" title="Attach">
-                📎
+        {/* Input Area */}
+        <div className="chat-input-container">
+          <form className="chat-input-area" onSubmit={handleSendMessage}>
+            <div className="input-wrapper">
+              <button type="button" className="attach-btn" title="Attach file">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M10 2a6 6 0 016 6v6a4 4 0 01-8 0V8a2 2 0 114 0v6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round"/>
+                </svg>
               </button>
-              <button type="button" className="action-icon" title="Voice">
-                🎤
-              </button>
+
+              <input
+                type="text"
+                placeholder="Message Genesis..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                disabled={isLoading}
+                className="chat-input"
+              />
+
               <motion.button
                 type="submit"
                 className="send-btn"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                disabled={isLoading}
+                disabled={isLoading || !inputValue.trim()}
               >
-                <span>Send</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M2 10L18 2L10 18L9 11L2 10Z" fill="currentColor" />
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3l16 7-16 7 3-7-3-7z"/>
                 </svg>
               </motion.button>
             </div>
-          </div>
-          <p className="input-hint">Genesis can make mistakes. Always verify important information.</p>
-        </form>
-      </motion.div>
+          </form>
+          <p className="input-disclaimer">Genesis can make mistakes. Always verify important information.</p>
+        </div>
+      </div>
     </div>
   )
 }
