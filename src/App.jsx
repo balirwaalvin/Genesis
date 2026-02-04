@@ -1,5 +1,4 @@
 import React from 'react'
-import { motion } from 'framer-motion'
 import Sidebar from './components/Sidebar'
 import ChatInterface from './components/ChatInterface'
 import './App.css'
