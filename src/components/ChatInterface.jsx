@@ -98,7 +98,7 @@ export default function ChatInterface() {
               animate="animate"
             >
               <div className="genesis-logo">
-                <div className="logo-circle">G</div>
+                <Logo size={80} />
               </div>
               <h2 className="welcome-title">Welcome to Genesis</h2>
               <p className="welcome-subtitle">How can I help you today?</p>

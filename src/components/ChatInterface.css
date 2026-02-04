@@ -25,50 +25,60 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding-top: 56px; /* Header height */
+  padding-top: 0;
   position: relative;
   z-index: 1;
+  background-color: var(--darker-bg); /* Ensure solid background matching sidebar */
 }
 
 /* Model Selector Bar */
 .model-selector-bar {
-  padding: 12px 24px;
-  border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  padding: 16px 24px;
+  /* Minimal look: no border bottom unless scrolled? Keep it simple */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Align left or center? ChatGPT has it top left usually */
 }
 
 .model-select {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  color: var(--text-primary);
-  padding: 8px 16px;
-  border-radius: 20px;
+  background: transparent;
+  width: auto;
+  border: none; /* Text only button feel */
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.3s;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s;
   outline: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.model-select:hover,
-.model-select:focus {
-  border-color: var(--glow-primary);
-  background: rgba(30, 41, 59, 0.8);
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+.model-select:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  box-shadow: none;
+  border: none;
 }
 
 /* Messages Area */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 80px 24px 120px; /* Top padding for model selector, bottom for input */
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 900px;
+  max-width: 800px;
   width: 100%;
   margin: 0 auto;
 }
@@ -367,23 +377,24 @@
 }
 
 .send-btn {
-  background: linear-gradient(135deg, var(--glow-primary), var(--glow-secondary));
+  background: #fff;
   border: none;
-  color: white;
-  width: 36px;
-  height: 36px;
+  color: #000;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s;
-  box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+  transition: all 0.2s;
+  box-shadow: none;
 }
 
 .send-btn:hover:not(:disabled) {
-  box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
-  transform: scale(1.05);
+  background: #e2e2e2;
+  transform: none;
+  box-shadow: none;
 }
 
 .send-btn:disabled {
