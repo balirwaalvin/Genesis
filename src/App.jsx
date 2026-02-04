@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import Header from './components/Header'
+import Sidebar from './components/Sidebar'
 import ChatInterface from './components/ChatInterface'
 import './App.css'
 
@@ -22,8 +22,10 @@ export default function App() {
       initial="hidden"
       animate="visible"
     >
-      <Header />
-      <ChatInterface />
+      <Sidebar />
+      <div className="main-content">
+        <ChatInterface />
+      </div>
     </motion.div>
   )
 }

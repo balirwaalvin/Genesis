@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import Logo from './Logo'
 import './ChatInterface.css'
 
 export default function ChatInterface() {
